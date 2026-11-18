@@ -1,1 +1,867 @@
-1
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="莫妮卡雙語卡" />
+  <title>莫妮卡 Monica 中阿英三語互動圖卡</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --surface: #ffffff;
+      --primary: #4f46e5;
+      --primary-soft: #eef2ff;
+      --accent: #f59e0b;
+      --accent-soft: #fef3c7;
+      --success: #10b981;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 14px 14px 96px;
+      line-height: 1.45;
+    }
+
+    /* 頂部控制列 */
+    .app-header {
+      background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+      color: #fff;
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.22);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .header-title h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .header-title p {
+      font-size: 0.8rem;
+      opacity: 0.9;
+      margin-top: 2px;
+    }
+
+    .test-sound-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      backdrop-filter: blur(4px);
+    }
+
+    .test-sound-btn:active {
+      transform: scale(0.95);
+      background: rgba(255, 255, 255, 0.35);
+    }
+
+    /* 雙向切換膠囊區 */
+    .control-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .seg-group {
+      background: rgba(15, 23, 42, 0.18);
+      padding: 3px;
+      border-radius: 11px;
+      display: flex;
+    }
+
+    .seg-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 6px 4px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+
+    .seg-btn.active {
+      background: #fff;
+      color: var(--primary);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    }
+
+    /* LINE 內建瀏覽器提醒 */
+    .line-warning {
+      display: none;
+      background: #fffbeb;
+      border: 1px solid #f59e0b;
+      color: #92400e;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      margin-bottom: 12px;
+    }
+
+    /* 搜尋與進階設定列 */
+    .search-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .search-input {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 0.92rem;
+      color: var(--text);
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-soft);
+    }
+
+    .speed-btn, .engine-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0 12px;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .speed-btn.slow {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: #92400e;
+    }
+
+    /* 分類橫向捲動標籤 */
+    .category-tabs {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      margin-bottom: 12px;
+      scrollbar-width: none;
+    }
+
+    .category-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .cat-pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 7px 13px;
+      border-radius: 999px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .cat-pill.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    /* 卡片網格 */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 11px;
+    }
+
+    @media (min-width: 520px) {
+      .cards-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* 莫妮卡兒童點選模式（大圖示） */
+    body.kid-mode .cards-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 2px solid transparent;
+      border-radius: var(--radius);
+      padding: 14px 10px 12px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.12s, border-color 0.2s, background-color 0.2s;
+    }
+
+    .card:active {
+      transform: scale(0.96);
+    }
+
+    .card.speaking {
+      border-color: var(--accent);
+      background: #fffbeb;
+      box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
+    }
+
+    .card-top-actions {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .pin-btn {
+      background: none;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      opacity: 0.35;
+      padding: 2px 4px;
+    }
+
+    .pin-btn.pinned {
+      opacity: 1;
+    }
+
+    .audio-badge {
+      font-size: 0.75rem;
+      background: var(--primary-soft);
+      color: var(--primary);
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    .card.speaking .audio-badge {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .card-emoji {
+      font-size: 2.2rem;
+      line-height: 1.1;
+      margin: 2px 0 6px;
+    }
+
+    body.kid-mode .card-emoji {
+      font-size: 3.4rem;
+      margin: 6px 0 10px;
+    }
+
+    .card-ar {
+      font-size: 1.38rem;
+      font-weight: 700;
+      color: #0f172a;
+      direction: rtl;
+      margin-bottom: 4px;
+      line-height: 1.35;
+    }
+
+    body.kid-mode .card-ar {
+      font-size: 1.55rem;
+    }
+
+    .card-zh {
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 2px;
+    }
+
+    .card-en {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .card-phonetic {
+      margin-top: auto;
+      width: 100%;
+      background: #f1f5f9;
+      border-radius: 8px;
+      padding: 4px 6px;
+      font-size: 0.78rem;
+      color: #334155;
+      font-weight: 600;
+    }
+
+    .card-roman {
+      display: block;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    body.kid-mode .card-en,
+    body.kid-mode .card-phonetic {
+      display: none;
+    }
+
+    /* 底部即時語音狀態浮動條 */
+    .status-toast {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.92);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      z-index: 100;
+      max-width: 92vw;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: opacity 0.2s;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      flex-shrink: 0;
+    }
+
+    .status-dot.playing {
+      background: var(--accent);
+      animation: blink 0.8s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-top">
+      <div class="header-title">
+        <h1>🌟 莫妮卡雙語互動圖卡</h1>
+        <p>點擊卡片立即發音（適用埃及 3 歲女童）</p>
+      </div>
+      <button class="test-sound-btn" id="testSoundBtn">🔊 測試聲音</button>
+    </div>
+
+    <div class="control-bar">
+      <!-- 方言切換 -->
+      <div class="seg-group" id="dialectSwitch">
+        <button class="seg-btn active" data-dialect="eg">🇪🇬 埃及親切口語</button>
+        <button class="seg-btn" data-dialect="msa">🇸🇦 標準阿拉伯語</button>
+      </div>
+      <!-- 模式切換 -->
+      <div class="seg-group" id="modeSwitch">
+        <button class="seg-btn active" data-mode="teacher">👩‍🏫 老師引導版</button>
+        <button class="seg-btn" data-mode="kid">👧 莫妮卡點選版</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="line-warning" id="lineWarning">
+    ⚠️ 偵測到您正在使用 LINE 內建瀏覽器，部分手機會阻擋語音播放。建議點擊右上角「⋮」或分享按鈕，選擇<strong>「以 Safari / Chrome 開啟」</strong>以獲得最穩定的發音效果！
+  </div>
+
+  <div class="search-row">
+    <input type="search" class="search-input" id="searchInput" placeholder="搜尋中文、英文或諧音（如：水、廁所、鞋）..." />
+    <button class="speed-btn" id="speedBtn" title="切換語速">語速：正常</button>
+    <button class="engine-btn" id="engineBtn" title="切換發音引擎">雙引擎</button>
+  </div>
+
+  <div class="category-tabs" id="categoryTabs">
+    <button class="cat-pill active" data-cat="all">全部 (28)</button>
+    <button class="cat-pill" data-cat="pinned">⭐ 常用置頂</button>
+    <button class="cat-pill" data-cat="routine">🚽 生理如廁</button>
+    <button class="cat-pill" data-cat="dress">👟 穿脫整理</button>
+    <button class="cat-pill" data-cat="class">🏫 課堂常規</button>
+    <button class="cat-pill" data-cat="emotion">💖 情緒安撫</button>
+    <button class="cat-pill" data-cat="ask">💬 需求詢問</button>
+  </div>
+
+  <main class="cards-grid" id="cardsGrid"></main>
+
+  <div class="status-toast" id="statusToast">
+    <span class="status-dot" id="statusDot"></span>
+    <span id="statusText">語音就緒：點擊任一圖卡發音</span>
+  </div>
+
+  <script>
+    // 28 組專為 3 歲埃及女童設計的雙語資料庫（全數為女性第二人稱）
+    const FLASHCARDS = [
+      // 1. 生理如廁 (routine)
+      {
+        id: 1, cat: 'routine', emoji: '🚽', zh: '上廁所', en: 'Bathroom / Toilet',
+        eg: { ar: 'حَمَّام', zhPy: '哈瑪姆', roman: 'Ḥammām' },
+        msa: { ar: 'اَلْحَمَّام', zhPy: '阿爾・哈瑪姆', roman: 'Al-Ḥammām' }
+      },
+      {
+        id: 2, cat: 'routine', emoji: '🧻', zh: '拿衛生紙', en: 'Tissue paper',
+        eg: { ar: 'مَنْدِيل', zhPy: '曼迪爾', roman: 'Mandīl' },
+        msa: { ar: 'وَرَقُ تَوْلِيت', zhPy: '瓦拉克・陶利特', roman: 'Waraqu Tawlīt' }
+      },
+      {
+        id: 3, cat: 'routine', emoji: '🧼', zh: '去洗手', en: 'Wash your hands',
+        eg: { ar: 'اِغْسِلِي إِيدِيكِ', zhPy: '伊赫西利・伊爹基', roman: 'Ighsilī īdēki' },
+        msa: { ar: 'اِغْسِلِي يَدَيْكِ', zhPy: '伊赫西利・亞戴基', roman: 'Ighsilī yadayki' }
+      },
+      {
+        id: 4, cat: 'routine', emoji: '💧', zh: '喝水', en: 'Drink water',
+        eg: { ar: 'اِشْرَبِي مَيَّة', zhPy: '伊什拉比・買呀', roman: 'Ishrabī mayya' },
+        msa: { ar: 'اِشْرَبِي الْمَاءَ', zhPy: '伊什拉比・爾・馬阿', roman: 'Ishrabī al-mā’a' }
+      },
+      {
+        id: 5, cat: 'routine', emoji: '🥣', zh: '拿碗吃飯', en: 'Eat with your bowl',
+        eg: { ar: 'كُلِي بِالطَّبَق', zhPy: '庫利・比塔巴克', roman: 'Kulī biṭ-ṭabaq' },
+        msa: { ar: 'كُلِي بِالْوِعَاءِ', zhPy: '庫利・比爾・威阿', roman: 'Kulī bil-wi‘ā’i' }
+      },
+      {
+        id: 6, cat: 'routine', emoji: '🍪', zh: '吃點心時間', en: 'Snack time',
+        eg: { ar: 'يَلَّا نَاكُل سْنَاك', zhPy: '呀拉・納庫爾・斯納克', roman: 'Yallā nākul snāk' },
+        msa: { ar: 'وَقْتُ الْوَجْبَةِ الْخَفِيفَةِ', zhPy: '瓦克圖・爾・瓦吉巴', roman: 'Waqtu al-wajba' }
+      },
+      {
+        id: 7, cat: 'routine', emoji: '😴', zh: '睡午覺', en: 'Nap time',
+        eg: { ar: 'وَقْت النُّوم', zhPy: '瓦克特・安農', roman: 'Waqt in-nōm' },
+        msa: { ar: 'وَقْتُ النَّوْمِ', zhPy: '瓦庫圖・安・瑙米', roman: 'Waqtu an-nawmi' }
+      },
+
+      // 2. 穿脫整理 (dress)
+      {
+        id: 8, cat: 'dress', emoji: '👟', zh: '穿鞋子', en: 'Put on your shoes',
+        eg: { ar: 'اِلْبِسِي جَزْمِتِك', zhPy: '伊爾比西・加茲米提克', roman: 'Ilbisī gazmitik' },
+        msa: { ar: 'اِلْبِسِي حِذَاءَكِ', zhPy: '伊爾比西・黑札阿基', roman: 'Ilbisī ḥidhā’aki' }
+      },
+      {
+        id: 9, cat: 'dress', emoji: '🧦', zh: '脫鞋子', en: 'Take off your shoes',
+        eg: { ar: 'اِقْلَعِي جَزْمِتِك', zhPy: '伊克拉伊・加茲米提克', roman: 'Iqla‘ī gazmitik' },
+        msa: { ar: 'اِخْلَعِي حِذَاءَكِ', zhPy: '伊赫萊伊・黑札阿基', roman: 'Ikhla‘ī ḥidhā’aki' }
+      },
+      {
+        id: 10, cat: 'dress', emoji: '🎒', zh: '背書包', en: 'Put on your bag',
+        eg: { ar: 'شِيلِي شَنْطِتِك', zhPy: '希利・尚提提克', roman: 'Shīlī shanṭitik' },
+        msa: { ar: 'اِحْمِلِي حَقِيبَتَكِ', zhPy: '伊赫米利・哈奇巴塔基', roman: 'Iḥmilī ḥaqībataki' }
+      },
+      {
+        id: 11, cat: 'dress', emoji: '🧸', zh: '收拾玩具', en: 'Clean up toys',
+        eg: { ar: 'لِمِّي اللُّعَب', zhPy: '利米・伊盧阿布', roman: 'Limmī il-lu‘ab' },
+        msa: { ar: 'رَتِّبِي الْأَلْعَابَ', zhPy: '拉提比・阿爾阿爾阿巴', roman: 'Rattibī al-al‘āba' }
+      },
+
+      // 3. 課堂常規 (class)
+      {
+        id: 12, cat: 'class', emoji: '🏃‍♀️', zh: '運動時間', en: 'Exercise / Play outside',
+        eg: { ar: 'وَقْت الرِّيَاضَة', zhPy: '瓦克特・伊利亞達', roman: 'Waqt ir-riyāḍa' },
+        msa: { ar: 'وَقْتُ الرِّيَاضَةِ', zhPy: '瓦庫圖・阿爾利亞達提', roman: 'Waqtu ar-riyāḍati' }
+      },
+      {
+        id: 13, cat: 'class', emoji: '🚶‍♀️', zh: '請排隊', en: 'Line up please',
+        eg: { ar: 'اُقَفِي فِي الطَّابُور', zhPy: '烏卡菲・菲塔布爾', roman: 'Uqafī fiṭ-ṭābūr' },
+        msa: { ar: 'قِفِي فِي الصَّفِّ', zhPy: '奇菲・菲薩菲', roman: 'Qifī fiṣ-ṣaffi' }
+      },
+      {
+        id: 14, cat: 'class', emoji: '🪑', zh: '坐好', en: 'Sit down nicely',
+        eg: { ar: 'اُقْعُدِي كُوَيِّس', zhPy: '烏庫迪・庫瓦伊斯', roman: 'Uq‘udī kuwayyis' },
+        msa: { ar: 'اِجْلِسِي جَيِّدًا', zhPy: '伊吉利西・傑伊丹', roman: 'Ijlisī jayyidan' }
+      },
+      {
+        id: 15, cat: 'class', emoji: '🤫', zh: '安靜 / 小聲點', en: 'Quiet please',
+        eg: { ar: 'هُدُوء شُوَيَّة', zhPy: '胡杜・舒瓦呀', roman: 'Hudū’ shuwayya' },
+        msa: { ar: 'هُدُوءٌ مِنْ فَضْلِكِ', zhPy: '胡杜溫・敏・法德利基', roman: 'Hudū’un min faḍliki' }
+      },
+      {
+        id: 16, cat: 'class', emoji: '👀', zh: '看老師這裡', en: 'Look here',
+        eg: { ar: 'بُصِّي هِنَا', zhPy: '布西・希納', roman: 'Buṣṣī hinā' },
+        msa: { ar: 'اُنْظُرِي هُنَا', zhPy: '溫祖里・胡納', roman: 'Unẓurī hunā' }
+      },
+      {
+        id: 17, cat: 'class', emoji: '🤝', zh: '牽老師的手', en: 'Hold my hand',
+        eg: { ar: 'اِمْسِكِي إِيدِي', zhPy: '伊姆西基・伊迪', roman: 'Imsikī īdī' },
+        msa: { ar: 'اِمْسِكِي يَدِي', zhPy: '伊姆西基・亞迪', roman: 'Imsikī yadī' }
+      },
+      {
+        id: 18, cat: 'class', emoji: '⏳', zh: '等一下', en: 'Wait a moment',
+        eg: { ar: 'اِسْتَنِّي شُوَيَّة', zhPy: '伊斯坦尼・舒瓦呀', roman: 'Istannī shuwayya' },
+        msa: { ar: 'اِنْتَظِرِي قَلِيلًا', zhPy: '殷塔濟里・卡利蘭', roman: 'Intaẓirī qalīlan' }
+      },
+
+      // 4. 情緒安撫 (emotion)
+      {
+        id: 19, cat: 'emotion', emoji: '👋', zh: '來這裡，莫妮卡', en: 'Come here, Monica',
+        eg: { ar: 'تَعَالِي هِنَا يَا مُونِيكَا', zhPy: '塔阿里・希納・亞・莫妮卡', roman: 'Ta‘ālī hinā yā Mūnīkā' },
+        msa: { ar: 'تَعَالَيْ هُنَا يَا مُونِيكَا', zhPy: '塔阿萊・胡納・亞・莫妮卡', roman: 'Ta‘ālay hunā yā Mūnīkā' }
+      },
+      {
+        id: 20, cat: 'emotion', emoji: '🛡️', zh: '不要害怕，老師陪妳', en: "Don't worry, I'm with you",
+        eg: { ar: 'مَاتْخَافِيش، أَنَا مَعَاكِ', zhPy: '馬特哈菲什，阿納・馬阿基', roman: 'Matkhāfīsh, anā ma‘āki' },
+        msa: { ar: 'لَا تَخَافِي، أَنَا مَعَكِ', zhPy: '拉・塔哈菲，阿納・馬阿基', roman: 'Lā takhāfī, anā ma‘aki' }
+      },
+      {
+        id: 21, cat: 'emotion', emoji: '👏', zh: '妳好棒！', en: 'Good job, Monica!',
+        eg: { ar: 'شَاطْرَة يَا مُونِيكَا!', zhPy: '沙特拉・亞・莫妮卡！', roman: 'Shāṭra yā Mūnīkā!' },
+        msa: { ar: 'مُمْتَازَة يَا مُونِيكَا!', zhPy: '穆姆塔扎・亞・莫妮卡！', roman: 'Mumtāza yā Mūnīkā!' }
+      },
+      {
+        id: 22, cat: 'emotion', emoji: '🤗', zh: '給老師抱抱', en: 'Come get a hug',
+        eg: { ar: 'تَعَالِي فِي حُضْنِي', zhPy: '塔阿里・菲・胡德尼', roman: 'Ta‘ālī fī ḥuḍnī' },
+        msa: { ar: 'عِنَاقٌ دَافِئٌ', zhPy: '伊納昆・達菲溫', roman: '‘Ināqun dāfi’un' }
+      },
+      {
+        id: 23, cat: 'emotion', emoji: '⚠️', zh: '小心！注意看', en: 'Be careful!',
+        eg: { ar: 'خَلِّي بَالِك!', zhPy: '哈利・巴利克！', roman: 'Khallī bālik!' },
+        msa: { ar: 'اِنْتَبِهِي!', zhPy: '殷塔比希！', roman: 'Intabihī!' }
+      },
+      {
+        id: 24, cat: 'emotion', emoji: '👩‍👧', zh: '媽媽等一下就來接妳', en: 'Mommy will come soon',
+        eg: { ar: 'مَامَا هَتِيجِي بَعْد شُوَيَّة', zhPy: '媽媽・哈提吉・巴德・舒瓦呀', roman: 'Māmā hatīgī ba‘d shuwayya' },
+        msa: { ar: 'سَتَأْتِي مَامَا قَرِيبًا', zhPy: '薩塔提・媽媽・卡里班', roman: 'Sata’tī māmā qarīban' }
+      },
+
+      // 5. 需求詢問 (ask)
+      {
+        id: 25, cat: 'ask', emoji: '❓', zh: '妳想上廁所嗎？', en: 'Do you need the toilet?',
+        eg: { ar: 'عَايْزَة تْرُوحِي الحَمَّام؟', zhPy: '愛札・特魯希・伊哈瑪姆？', roman: '‘Āyza trūḥī il-ḥammām?' },
+        msa: { ar: 'هَلْ تُرِيدِينَ الحَمَّامَ؟', zhPy: '哈爾・圖里迪納・爾哈瑪瑪？', roman: 'Hal turīdīna al-ḥammāma?' }
+      },
+      {
+        id: 26, cat: 'ask', emoji: '🍽️', zh: '妳餓了嗎？', en: 'Are you hungry?',
+        eg: { ar: 'إِنْتِ جَعَانَة؟', zhPy: '殷提・加阿納？', roman: 'Inti ga‘āna?' },
+        msa: { ar: 'هَلْ أَنْتِ جَائِعَةٌ؟', zhPy: '哈爾・安提・賈伊阿圖恩？', roman: 'Hal anti jā’i‘atun?' }
+      },
+      {
+        id: 27, cat: 'ask', emoji: '🥤', zh: '妳口渴嗎？', en: 'Are you thirsty?',
+        eg: { ar: 'إِنْتِ عَطْشَانَة؟', zhPy: '殷提・阿特沙納？', roman: 'Inti ‘aṭshāna?' },
+        msa: { ar: 'هَلْ أَنْتِ عَطْشَانَةٌ؟', zhPy: '哈爾・安提・阿特沙納圖恩？', roman: 'Hal anti ‘aṭshānatun?' }
+      },
+      {
+        id: 28, cat: 'ask', emoji: '🩹', zh: '哪裡痛痛嗎？', en: 'Where does it hurt?',
+        eg: { ar: 'إِيه اللِّي بْيُوجَعِك؟', zhPy: '欸・伊利・比尤加伊克？', roman: 'Ēh illī byūga‘ik?' },
+        msa: { ar: 'أَيْنَ يُؤْلِمُكِ؟', zhPy: '艾納・尤利穆基？', roman: 'Ayna yu’limuki?' }
+      }
+    ];
+
+    // 狀態管理
+    let state = {
+      dialect: 'eg',       // 'eg' (埃及) | 'msa' (標準)
+      mode: 'teacher',     // 'teacher' | 'kid'
+      category: 'all',
+      search: '',
+      slowRate: false,
+      engine: 'auto',      // 'auto' (雲端優先+本地備援) | 'native' (純本地)
+      pinnedIds: JSON.parse(localStorage.getItem('monica_pinned_ids') || '[1, 4, 8, 9, 19, 20]')
+    };
+
+    let currentAudioObj = null;
+    let audioCtx = null;
+
+    // 偵測 LINE 內建瀏覽器
+    if (/Line/i.test(navigator.userAgent)) {
+      document.getElementById('lineWarning').style.display = 'block';
+    }
+
+    // 輕柔觸控回饋音效（同時解鎖 iOS 音訊權限）
+    function playTapFeedback() {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        if (!audioCtx) audioCtx = new AudioContext();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(580, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(820, audioCtx.currentTime + 0.06);
+        gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.07);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.07);
+      } catch (e) {}
+    }
+
+    function setStatus(msg, isPlaying = false) {
+      document.getElementById('statusText').textContent = msg;
+      const dot = document.getElementById('statusDot');
+      if (isPlaying) dot.classList.add('playing');
+      else dot.classList.remove('playing');
+    }
+
+    function clearPlayingStyles() {
+      document.querySelectorAll('.card.speaking').forEach(el => el.classList.remove('speaking'));
+    }
+
+    // 引擎 B：手機系統內建語音合成（離線可用）
+    function speakNative(arabicText, labelZh, cardEl) {
+      if (!('speechSynthesis' in window)) {
+        setStatus('⚠️ 此瀏覽器不支援離線語音，請確認網路連線', false);
+        clearPlayingStyles();
+        return;
+      }
+
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+      }
+
+      const utter = new SpeechSynthesisUtterance(arabicText);
+      window._activeUtterance = utter; // 防止行動裝置瀏覽器回收變數導致中斷
+      utter.lang = state.dialect === 'eg' ? 'ar-EG' : 'ar-SA';
+      utter.rate = state.slowRate ? 0.72 : 0.9;
+      utter.pitch = 1.08;
+
+      const voices = window.speechSynthesis.getVoices();
+      const arVoice = voices.find(v => v.lang.toLowerCase().includes('ar'));
+      if (arVoice) utter.voice = arVoice;
+
+      utter.onstart = () => setStatus(`🔊 系統發音：${labelZh}`, true);
+      utter.onend = () => {
+        clearPlayingStyles();
+        setStatus(`✅ 播放完成：${labelZh}`, false);
+      };
+      utter.onerror = () => {
+        clearPlayingStyles();
+        setStatus('⚠️ 請關閉手機側邊靜音鍵並調高媒體音量', false);
+      };
+
+      window.speechSynthesis.speak(utter);
+    }
+
+    // 引擎 A：雲端標準阿拉伯語女聲（解決手機無本地阿拉伯語音包問題）
+    function speakCloud(arabicText, labelZh, cardEl) {
+      if (currentAudioObj) {
+        currentAudioObj.pause();
+        currentAudioObj = null;
+      }
+
+      const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ar&q=${encodeURIComponent(arabicText)}`;
+      const audio = new Audio();
+      audio.referrerPolicy = 'no-referrer';
+      audio.src = url;
+      audio.playbackRate = state.slowRate ? 0.78 : 0.96;
+      currentAudioObj = audio;
+
+      setStatus(`🔊 正在播放：${labelZh}...`, true);
+
+      audio.onended = () => {
+        clearPlayingStyles();
+        setStatus(`✅ 播放完成：${labelZh}`, false);
+      };
+
+      audio.onerror = () => {
+        // 雲端失敗（如無網路）時自動無縫切換至手機內建語音
+        speakNative(arabicText, labelZh, cardEl);
+      };
+
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          speakNative(arabicText, labelZh, cardEl);
+        });
+      }
+    }
+
+    // 主發音入口
+    function speakCard(item, cardEl) {
+      playTapFeedback();
+      clearPlayingStyles();
+      if (cardEl) cardEl.classList.add('speaking');
+
+      const variant = item[state.dialect];
+      if (state.engine === 'native') {
+        speakNative(variant.ar, item.zh, cardEl);
+      } else {
+        speakCloud(variant.ar, item.zh, cardEl);
+      }
+    }
+
+    // 渲染所有圖卡
+    function renderCards() {
+      const grid = document.getElementById('cardsGrid');
+      const keyword = state.search.trim().toLowerCase();
+
+      const filtered = FLASHCARDS.filter(item => {
+        if (state.category === 'pinned' && !state.pinnedIds.includes(item.id)) return false;
+        if (state.category !== 'all' && state.category !== 'pinned' && item.cat !== state.category) return false;
+
+        if (!keyword) return true;
+        const v = item[state.dialect];
+        return (
+          item.zh.toLowerCase().includes(keyword) ||
+          item.en.toLowerCase().includes(keyword) ||
+          v.zhPy.toLowerCase().includes(keyword) ||
+          v.roman.toLowerCase().includes(keyword) ||
+          v.ar.includes(keyword)
+        );
+      });
+
+      grid.innerHTML = '';
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 36px 12px; color: var(--text-muted);">找不到符合「${state.search}」的指令卡片</div>`;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const v = item[state.dialect];
+        const isPinned = state.pinnedIds.includes(item.id);
+
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="card-top-actions">
+            <button class="pin-btn ${isPinned ? 'pinned' : ''}" title="置頂常用">⭐</button>
+            <span class="audio-badge">🔊 點擊發音</span>
+          </div>
+          <div class="card-emoji">${item.emoji}</div>
+          <div class="card-ar">${v.ar}</div>
+          <div class="card-zh">${item.zh}</div>
+          <div class="card-en">${item.en}</div>
+          <div class="card-phonetic">
+            ${v.zhPy}
+            <span class="card-roman">${v.roman}</span>
+          </div>
+        `;
+
+        // 點擊卡片發音
+        card.addEventListener('click', (e) => {
+          if (e.target.closest('.pin-btn')) return;
+          speakCard(item, card);
+        });
+
+        // 置頂星號切換
+        card.querySelector('.pin-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (state.pinnedIds.includes(item.id)) {
+            state.pinnedIds = state.pinnedIds.filter(id => id !== item.id);
+          } else {
+            state.pinnedIds.push(item.id);
+          }
+          localStorage.setItem('monica_pinned_ids', JSON.stringify(state.pinnedIds));
+          renderCards();
+        });
+
+        grid.appendChild(card);
+      });
+    }
+
+    // 綁定控制事件
+    document.getElementById('testSoundBtn').addEventListener('click', () => {
+      speakCard({
+        zh: '哈囉莫妮卡！歡迎來到幼兒園',
+        eg: { ar: 'أَهْلًا يَا مُونِيكَا' },
+        msa: { ar: 'مَرْحَبًا يَا مُونِيكَا' }
+      }, null);
+    });
+
+    document.querySelectorAll('#dialectSwitch .seg-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#dialectSwitch .seg-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.dialect = btn.dataset.dialect;
+        renderCards();
+      });
+    });
+
+    document.querySelectorAll('#modeSwitch .seg-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#modeSwitch .seg-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.mode = btn.dataset.mode;
+        document.body.classList.toggle('kid-mode', state.mode === 'kid');
+      });
+    });
+
+    document.querySelectorAll('#categoryTabs .cat-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('#categoryTabs .cat-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        state.category = pill.dataset.cat;
+        renderCards();
+      });
+    });
+
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      state.search = e.target.value;
+      renderCards();
+    });
+
+    document.getElementById('speedBtn').addEventListener('click', (e) => {
+      state.slowRate = !state.slowRate;
+      e.target.textContent = state.slowRate ? '語速：慢速' : '語速：正常';
+      e.target.classList.toggle('slow', state.slowRate);
+    });
+
+    document.getElementById('engineBtn').addEventListener('click', (e) => {
+      state.engine = state.engine === 'auto' ? 'native' : 'auto';
+      e.target.textContent = state.engine === 'auto' ? '雙引擎' : '離線語音';
+      setStatus(state.engine === 'auto' ? '已切換為：雲端優先＋離線備援雙引擎' : '已切換為：手機系統離線語音');
+    });
+
+    // 預載系統語音列表
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+    }
+
+    renderCards();
+  </script>
+</body>
+</html>
