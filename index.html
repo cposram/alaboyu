@@ -300,7 +300,7 @@
     }
 
     .card-ar {
-      font-size: 1.38rem;
+      font-size: 1.32rem;
       font-weight: 700;
       color: #0f172a;
       direction: rtl;
@@ -309,7 +309,7 @@
     }
 
     body.kid-mode .card-ar {
-      font-size: 1.55rem;
+      font-size: 1.5rem;
     }
 
     .card-zh {
@@ -421,14 +421,15 @@
   </div>
 
   <div class="search-row">
-    <input type="search" class="search-input" id="searchInput" placeholder="搜尋中文、英文或諧音（如：水、廁所、鞋）..." />
+    <input type="search" class="search-input" id="searchInput" placeholder="搜尋中文、英文或諧音（如：早安、睡飽、開心、大便）..." />
     <button class="speed-btn" id="speedBtn" title="切換語速">語速：正常</button>
     <button class="engine-btn" id="engineBtn" title="切換發音引擎">雙引擎</button>
   </div>
 
   <div class="category-tabs" id="categoryTabs">
-    <button class="cat-pill active" data-cat="all">全部 (28)</button>
+    <button class="cat-pill active" data-cat="all">全部 (35)</button>
     <button class="cat-pill" data-cat="pinned">⭐ 常用置頂</button>
+    <button class="cat-pill" data-cat="greeting">🤝 親切問候</button>
     <button class="cat-pill" data-cat="routine">🚽 生理如廁</button>
     <button class="cat-pill" data-cat="dress">👟 穿脫整理</button>
     <button class="cat-pill" data-cat="class">🏫 課堂常規</button>
@@ -444,13 +445,50 @@
   </div>
 
   <script>
-    // 28 組專為 3 歲埃及女童設計的雙語資料庫（全數為女性第二人稱）
+    // 35 組專為 3 歲埃及女童設計的雙語資料庫（全數為女性第二人稱）
     const FLASHCARDS = [
+      // 0. 親切問候與關係建立 (greeting)
+      {
+        id: 32, cat: 'greeting', emoji: '☀️', zh: '早安', en: 'Good morning',
+        eg: { ar: 'صَبَاح الْخَيْر', zhPy: '薩巴赫・伊海爾', roman: 'Ṣabāḥ il-khēr' },
+        msa: { ar: 'صَبَاحُ الْخَيْرِ', zhPy: '薩巴胡・阿爾海里', roman: 'Ṣabāḥu al-khayri' }
+      },
+      {
+        id: 33, cat: 'greeting', emoji: '🛏️', zh: '有沒有睡飽？', en: 'Did you sleep well?',
+        eg: { ar: 'نِمْتِي كُوَيِّس؟', zhPy: '尼姆提・庫瓦伊斯？', roman: 'Nimtī kuwayyis?' },
+        msa: { ar: 'هَلْ نِمْتِ جَيِّدًا؟', zhPy: '哈爾・尼姆提・傑伊丹？', roman: 'Hal nimti jayyidan?' }
+      },
+      {
+        id: 34, cat: 'greeting', emoji: '🥰', zh: '今天在幼兒園開心嗎？', en: 'Are you happy at school today?',
+        eg: { ar: 'إِنْتِ مَبْسُوطَة فِي الْحَضَانَة النَّهَارْدَة؟', zhPy: '殷提・馬布蘇塔・菲爾哈達納・伊納哈爾達？', roman: 'Inti mabsūṭa fil-ḥaḍāna in-nahārda?' },
+        msa: { ar: 'هَلْ أَنْتِ سَعِيدَةٌ فِي الرَّوْضَةِ الْيَوْمَ؟', zhPy: '哈爾・安提・薩伊達圖恩・菲爾勞達蒂・阿爾堯瑪？', roman: 'Hal anti sa‘īdatun fir-rawḍati al-yawma?' }
+      },
+      {
+        id: 35, cat: 'greeting', emoji: '👋', zh: '再見 / 拜拜', en: 'Goodbye / Bye-bye',
+        eg: { ar: 'مَعَ السَّلَامَة', zhPy: '馬阿・伊薩拉瑪', roman: 'Ma‘a is-salāma' },
+        msa: { ar: 'إِلَى اللِّقَاءِ', zhPy: '伊拉・阿爾利卡伊', roman: 'Ilā al-liqā’i' }
+      },
+
       // 1. 生理如廁 (routine)
       {
         id: 1, cat: 'routine', emoji: '🚽', zh: '上廁所', en: 'Bathroom / Toilet',
         eg: { ar: 'حَمَّام', zhPy: '哈瑪姆', roman: 'Ḥammām' },
         msa: { ar: 'اَلْحَمَّام', zhPy: '阿爾・哈瑪姆', roman: 'Al-Ḥammām' }
+      },
+      {
+        id: 29, cat: 'routine', emoji: '💦', zh: '想尿尿嗎？', en: 'Do you need to pee?',
+        eg: { ar: 'عَايْزَة تِعْمِلِي بِيبِي؟', zhPy: '愛札・提米利・逼逼？', roman: '‘Āyza ti‘milī bībī?' },
+        msa: { ar: 'هَلْ تُرِيدِينَ التَّبَوُّلَ؟', zhPy: '哈爾・圖里迪納・阿塔巴烏拉？', roman: 'Hal turīdīna at-tabawwula?' }
+      },
+      {
+        id: 30, cat: 'routine', emoji: '💩', zh: '想大便嗎？', en: 'Do you need to poop?',
+        eg: { ar: 'عَايْزَة تِعْمِلِي كَاكَا؟', zhPy: '愛札・提米利・卡卡？', roman: '‘Āyza ti‘milī kākā?' },
+        msa: { ar: 'هَلْ تُرِيدِينَ التَّبَرُّزَ؟', zhPy: '哈爾・圖里迪納・阿塔巴魯札？', roman: 'Hal turīdīna at-tabarruza?' }
+      },
+      {
+        id: 31, cat: 'routine', emoji: '🩲', zh: '大便了嗎？', en: 'Did you poop?',
+        eg: { ar: 'عَمَلْتِي كَاكَا؟', zhPy: '阿瑪爾提・卡卡？', roman: '‘Amaltī kākā?' },
+        msa: { ar: 'هَلْ تَبَرَّزْتِ؟', zhPy: '哈爾・塔巴拉茲提？', roman: 'Hal tabarrazti?' }
       },
       {
         id: 2, cat: 'routine', emoji: '🧻', zh: '拿衛生紙', en: 'Tissue paper',
@@ -605,7 +643,7 @@
       search: '',
       slowRate: false,
       engine: 'auto',      // 'auto' (雲端優先+本地備援) | 'native' (純本地)
-      pinnedIds: JSON.parse(localStorage.getItem('monica_pinned_ids') || '[1, 4, 8, 9, 19, 20]')
+      pinnedIds: JSON.parse(localStorage.getItem('monica_pinned_ids') || '[32, 1, 29, 30, 4, 8, 19, 34, 35]')
     };
 
     let currentAudioObj = null;
@@ -662,7 +700,7 @@
       }
 
       const utter = new SpeechSynthesisUtterance(arabicText);
-      window._activeUtterance = utter; // 防止行動裝置瀏覽器回收變數導致中斷
+      window._activeUtterance = utter;
       utter.lang = state.dialect === 'eg' ? 'ar-EG' : 'ar-SA';
       utter.rate = state.slowRate ? 0.72 : 0.9;
       utter.pitch = 1.08;
@@ -706,7 +744,6 @@
       };
 
       audio.onerror = () => {
-        // 雲端失敗（如無網路）時自動無縫切換至手機內建語音
         speakNative(arabicText, labelZh, cardEl);
       };
 
